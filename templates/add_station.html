@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Thêm Trạm Xăng{% endblock %}
+
+{% block content %}
+<h2>Thêm Trạm Xăng</h2>
+<form action="{{ url_for('add_gas_station') }}" method="post">
+    <div class="form-group">
+        <label for="name">Tên Trạm Xăng</label>
+        <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên trạm xăng" required>
+    </div>
+    <div class="form-group">
+        <label for="lat">Vĩ Độ</label>
+        <input type="text" class="form-control" id="lat" name="lat" placeholder="Nhập vĩ độ" required>
+    </div>
+    <div class="form-group">
+        <label for="lng">Kinh Độ</label>
+        <input type="text" class="form-control" id="lng" name="lng" placeholder="Nhập kinh độ" required>
+    </div>
+    <a class="btn btn-success" href="{{ url_for('list_gas_station') }}">Quay Lại</a>
+    <button type="submit" class="btn btn-primary">Thêm Trạm Xăng Mới</button>
+</form>
+{% endblock %}

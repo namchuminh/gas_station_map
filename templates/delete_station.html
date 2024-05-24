@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Xóa Trạm Xăng{% endblock %}
+
+{% block content %}
+<h2>Xóa Trạm Xăng</h2>
+<p>Bạn có chắc chắn xóa trạm xăng "{{ gas_station.name }}" hay không??</p>
+<form action="{{ url_for('delete_gas_station', index=index) }}" method="post">
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a href="{{ url_for('list_gas_station') }}" class="btn btn-secondary">Quay Lại</a>
+</form>
+{% endblock %}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gas Station Map - Bắc Từ Liêm, Hà Nội</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <div class="map-container">
+        <div class="search-container">
+            <h4>Bản đồ trạm xăng - Quận Bắc Từ Liêm, Hà Nội</h4>
+            <div class="form-group">
+                <input type="text" class="form-control" id="keywords" placeholder="Nhập từ khóa">
+            </div>
+            <button class="btn btn-primary" onclick="search()">Tìm kiếm</button>
+            <a href="{{ url_for('list_gas_station') }}" class="btn btn-success">Quản Lý Trạm Xăng</a>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([21.038308, 105.782986], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        function addMarkers(stations) {
+            stations.forEach(station => {
+                L.marker([station.lat, station.lng]).addTo(map)
+                    .bindTooltip(station.name, { permanent: true, direction: "right" });
+            });
+        }
+
+        function search() {
+            var keywords = document.getElementById('keywords').value.split(' ');
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ keywords: keywords }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                map.eachLayer((layer) => {
+                    if (!!layer.toGeoJSON) {
+                        map.removeLayer(layer);
+                    }
+                });
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                addMarkers(data);
+            });
+        }
+
+        // Get gas stations from Flask and add them to the map
+        var gasStations = {{ gas_stations|safe }};
+        addMarkers(gasStations);
+
+        // Add event listener for the search form
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            search();
+        });
+    </script>
+</body>
+</html>
